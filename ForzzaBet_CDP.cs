@@ -17,6 +17,7 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using Quobject.EngineIoClientDotNet.Modules;
 
 namespace Forzza
 {
@@ -485,7 +486,7 @@ namespace Forzza
                                 tempgoal = temgoal;
                             } else
                             {
-                                tempgoal = (Convert.ToDouble(temgoal.Replace(".0", ".5")) + 1).ToString();
+                                tempgoal = Convert.ToDouble(temgoal.Replace(".0", ".5")).ToString();
                             }
                             if (forzzaobj["bt"].ToString() == "197" && forzzaobj["hc"].ToString() == tempgoal)
                             {                                 
@@ -504,57 +505,136 @@ namespace Forzza
                                 return true;
                             }
                         }
-                        //else if (betItem.Naldo_outcome.Contains(naldoHome) || betItem.Naldo_outcome.Contains(naldoAway))
-                        //{
-                        //    string input = betItem.Naldo_outcome;
-                        //    MatchCollection outcomematches = Regex.Matches(input, @"[+-]?\d+(?:\.\d+)?");
-                        //    string tempAsian = outcomematches[outcomematches.Count - 1].Value;
-                        //    string tempEuropen = "";
-                        //    string tempteam = "";
-                        //    if(betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+1.0" || tempAsian == "+0.5")
-                        //    {
-                        //        tempEuropen = "1:0";
-                        //        tempteam = "1";
-                        //    } else if(betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+1.0" || tempAsian == "+0.5")
-                        //    {
-                        //        tempEuropen = "0:1";
-                        //        tempteam = "2";
-                        //    } else if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "-1.0" || tempAsian == "-0.5")
-                        //    {
-                        //        tempEuropen = "0:1";
-                        //        tempteam = "1";
-                        //    }
-                        //    else if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "-1.0" || tempAsian == "-0.5")
-                        //    {
-                        //        tempEuropen = "1:0";
-                        //        tempteam = "2";
-                        //    }else if(betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+1.5" || tempAsian == "+2")
-                        //    {
-                        //        tempEuropen = "2:0";
-                        //        tempteam = "1";
-                        //    }else if(betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+1.5" || tempAsian == "+2")
-                        //    {
-                        //        tempEuropen = "0:2";
-                        //        tempteam = "2";
-                        //    }
+                        else if (betItem.Naldo_outcome.Contains(naldoHome) || betItem.Naldo_outcome.Contains(naldoAway))
+                        {
+                            string input = betItem.Naldo_outcome;
+                            MatchCollection outcomematches = Regex.Matches(input, @"[+-]?\d+(?:\.\d+)?");
+                            string tempAsian = outcomematches[outcomematches.Count - 1].Value;
+                            string tempEuropen = "";
+                            string tempteam = "";
 
-                        //    if (forzzaobj["bt"].ToString() == "198" && forzzaobj["hc"].ToString() == tempEuropen)
-                        //    {
-                        //        Setting.Instance.eventID = eventid;
-                        //        Setting.Instance.marketID = forzzaobj["bc"]
-                        //        .FirstOrDefault(b => b["t"] != null && b["t"].ToString() == tempteam)?["id"]?.ToString();
-                        //        HistoryList historyItem = new HistoryList();
-                        //        historyItem.homeTeam = forzzaobj["ht"].ToString();
-                        //        historyItem.awayTeam = forzzaobj["at"].ToString();
-                        //        historyItem.stake = Setting.Instance.stake.ToString();
-                        //        historyItem.outcome = betItem.Naldo_outcome;
-                        //        historyItem.oddValue = forzzaobj["bc"]
-                        //        .FirstOrDefault(b => b["t"] != null && b["t"].ToString() == tempteam)?["q"]?.ToString();
-                        //        Historylist.Add(historyItem);
-                        //        return true;
-                        //    }
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "-2.0")
+                            {
+                                tempEuropen = "0:2";
+                                tempteam = "1";
+                            }
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "-1.5")
+                            //{
+                            //    tempEuropen = "0:2";
+                            //    tempteam = "X";
+                            //}
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "-1.0")
+                            {
+                                tempEuropen = "0:1";
+                                tempteam = "1";
+                            }
 
-                        //} 
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "-0.5")
+                            //{
+                            //    tempEuropen = "0:1";
+                            //    tempteam = "X";
+                            //}
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "0.0")
+                            {
+                                WriteLog.WrittingLog("Cannot Bet for 0.0");
+                            }
+
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+0.5")
+                            //{
+                            //    tempEuropen = "1:0";
+                            //    tempteam = "X";
+                            //}
+                            
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+1.0")
+                            {
+                                tempEuropen = "1:0";
+                                tempteam = "1";
+                            }
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+1.5")
+                            //{
+                            //    tempEuropen = "2:0";
+                            //    tempteam = "X";
+                            //}
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoHome) && tempAsian == "+2")
+                            {
+                                tempEuropen = "2:0";
+                                tempteam = "1";
+                            }
+
+
+                            //For Away Process
+
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "-2.0")
+                            {
+                                tempEuropen = "2:0";
+                                tempteam = "2";
+                            }
+
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "-1.5")
+                            //{
+                            //    tempEuropen = "1:0";
+                            //    tempteam = "X";
+                            //}
+
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "-1.0")
+                            {
+                                tempEuropen = "1:0";
+                                tempteam = "2";
+                            }
+
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "-0.5")
+                            //{
+                            //    tempEuropen = "1:0";
+                            //    tempteam = "X";
+                            //}
+                            
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "0.0")
+                            {
+                                WriteLog.WrittingLog("Cannot Bet for 0.0");
+                            }
+
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+0.5")
+                            //{
+                            //    tempEuropen = "0:1";
+                            //    tempteam = "X";
+                            //}
+                            
+
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+1.0")
+                            {
+                                tempEuropen = "0:1";
+                                tempteam = "2";
+                            }
+
+                            //if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+1.5")
+                            //{
+                            //    tempEuropen = "0:2";
+                            //    tempteam = "X";
+                            //}
+
+                            if (betItem.Naldo_outcome.ToString().Contains(naldoAway) && tempAsian == "+2")
+                            {
+                                tempEuropen = "0:2";
+                                tempteam = "2";
+                            }
+
+                            if (forzzaobj["bt"].ToString() == "198" && forzzaobj["hc"].ToString() == tempEuropen)
+                            {
+                                Setting.Instance.eventID = eventid;
+                                Setting.Instance.marketID = forzzaobj["bc"]
+                                .FirstOrDefault(b => b["t"] != null && b["t"].ToString() == tempteam)?["id"]?.ToString();
+                                HistoryList historyItem = new HistoryList();
+                                historyItem.homeTeam = forzzaobj["ht"].ToString();
+                                historyItem.awayTeam = forzzaobj["at"].ToString();
+                                historyItem.stake = Setting.Instance.stake.ToString();
+                                historyItem.outcome = betItem.Naldo_outcome;
+                                historyItem.oddValue = forzzaobj["bc"]
+                                .FirstOrDefault(b => b["t"] != null && b["t"].ToString() == tempteam)?["q"]?.ToString();
+                                Historylist.Add(historyItem);
+                                return true;
+                            }
+
+                        }
                     }
 
                 }
