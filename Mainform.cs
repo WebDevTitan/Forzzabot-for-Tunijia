@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Forzza.controller;
+using MySqlConnector;
 using Quobject.EngineIoClientDotNet.Modules;
 
 namespace Forzza
@@ -29,6 +31,8 @@ namespace Forzza
         private SocketConnector _socketConnector = null;
         private bool isRunning = false;
         private List<NaldotipList> Feedlist = new List<NaldotipList>();
+        private string connectionString = "server=localhost;port=3306;database=yourdb;user=root;password=;";
+        MySqlConnection connection = null;
         public Mainform()
         {
             InitializeComponent();
@@ -88,7 +92,7 @@ namespace Forzza
                 if (!canSave())
                     return;
                 setValues();
-                saveSettingInfo();
+                saveSettingInfo();               
 
                 MessageBox.Show("Saved");
             }
@@ -120,7 +124,14 @@ namespace Forzza
                     txtDomain.Focus();
                     MessageBox.Show("Please input domain");
                     return false;
-                }                
+                }
+                if (string.IsNullOrEmpty(txtLicense.Text))
+                {
+                    txtLicense.Focus();
+                    MessageBox.Show("Please input License");
+                    return false;
+
+                }
             }
             catch
             {
@@ -133,9 +144,8 @@ namespace Forzza
         {
             Setting.Instance.username = txtUsername.Text;
             Setting.Instance.password = txtPassword.Text;
-            Setting.Instance.domain = txtDomain.Text;            
-            //Setting.Instance.marketID = txtMarketId.Text;
-            //Setting.Instance.eventID = txtEventId.Text;
+            Setting.Instance.domain = txtDomain.Text;
+            Setting.Instance.license = txtLicense.Text;           
             Setting.Instance.stake = Convert.ToDouble(txtStake.Text);
             Setting.Instance.SeverUrl = "http://95.179.244.192:5002/";
         }
@@ -144,7 +154,7 @@ namespace Forzza
         {
             try
             {
-                string text = string.Format("username={0}\r\npassword={1}\r\ndomain={2}\r\nstake={3}", Setting.Instance.username, Setting.Instance.password, Setting.Instance.domain, Setting.Instance.stake.ToString());
+                string text = string.Format("username={0}\r\npassword={1}\r\ndomain={2}\r\nstake={3}\r\nlicense={4}", Setting.Instance.username, Setting.Instance.password, Setting.Instance.domain, Setting.Instance.stake.ToString(), Setting.Instance.license);
                 File.WriteAllText("setting.txt", text);
 
             }
@@ -161,6 +171,7 @@ namespace Forzza
                 txtPassword.Text = Setting.Instance.password;                
                 txtDomain.Text = Setting.Instance.domain;
                 txtStake.Text = Setting.Instance.stake.ToString();
+                txtLicense.Text = Setting.Instance.license;
             }
             catch
             {
@@ -189,6 +200,8 @@ namespace Forzza
                                 Setting.Instance.domain = values[1];
                             else if (values[0] == "stake")
                                 Setting.Instance.stake = Convert.ToDouble(values[1]);
+                            else if (values[0] == "license")
+                                Setting.Instance.license = values[1];
                         }
                     }
                 }
@@ -203,16 +216,84 @@ namespace Forzza
         {
             try
             {
-                _socketConnector = new SocketConnector(WriteLog.WrittingLog, onSocket, this);
-                WriteLog.WrittingLog("Bot Starting...");                
-                threadForzza = new Thread(ThreadFunc);
-                threadForzza.Start();
+                bool canstart = Doconnect();
+                if (canstart)
+                {                                       
+                    _socketConnector = new SocketConnector(WriteLog.WrittingLog, onSocket, this);
+                    WriteLog.WrittingLog("Bot Starting...");                
+                    threadForzza = new Thread(ThreadFunc);
+                    threadForzza.Start();
+                }
             }
             catch
             {
 
             }
         }
+
+        public bool Doconnect()
+        {
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+                Console.WriteLine("Connection successful!");
+                if (!string.IsNullOrEmpty(Setting.Instance.license))
+                {
+                    string query = $"SELECT * FROM licenses WHERE BotAccountInfo = '{Setting.Instance.username}'";
+                    //// Create a command object                    
+                    //MySqlCommand command = new MySqlCommand(query, connection);
+
+                    //return true;
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if(reader.HasRows == false)
+                        {
+                            WriteLog.WrittingLog("Your Account is not exist. Please Input Correct User Info");
+                            return false;
+                        }
+                        while (reader.Read()) // Loop through results
+                        {
+                            string licenseKey = reader["LicenseKey"].ToString();
+                            DateTime expiryDate = Convert.ToDateTime(reader["ExpiryDate"]);
+                            DateTime issueDate = Convert.ToDateTime(reader["IssueDate"]);
+                            string status = reader["Status"].ToString();
+                            string username = reader["BotAccountInfo"].ToString();
+
+                            if(licenseKey != Setting.Instance.license)
+                            {
+                                WriteLog.WrittingLog("Your license is invalid.");
+                                return false;
+                            }
+                            if(username != Setting.Instance.username )
+                            {
+                                
+                            }
+                            if(expiryDate < DateTime.Now)
+                            {
+                                WriteLog.WrittingLog("Your license is expired.");
+                                return false;
+                            }
+                            
+
+                            Console.WriteLine($"License: {licenseKey}, Expiry: {expiryDate}");
+                            
+                        }
+                    }
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+            return true ;
+        }
+
+        
+        
+        
         public void displayScan(List<NaldotipList> LiveGame)
         {
 

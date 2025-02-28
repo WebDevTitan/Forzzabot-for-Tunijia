@@ -31,5 +31,7 @@ namespace Forzza
 
         public string SeverUrl { get; set; }
 
+        
+
     }
 }

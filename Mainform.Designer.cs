@@ -64,6 +64,8 @@
             this.Naldo_odd = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Naldo_stake = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingTiplist = new System.Windows.Forms.BindingSource(this.components);
+            this.txtLicense = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabPageSetting.SuspendLayout();
             this.tabPageMonitor.SuspendLayout();
@@ -86,6 +88,8 @@
             // 
             // tabPageSetting
             // 
+            this.tabPageSetting.Controls.Add(this.label3);
+            this.tabPageSetting.Controls.Add(this.txtLicense);
             this.tabPageSetting.Controls.Add(this.label8);
             this.tabPageSetting.Controls.Add(this.txtStake);
             this.tabPageSetting.Controls.Add(this.txtDomain);
@@ -133,7 +137,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(361, 261);
+            this.btnSave.Location = new System.Drawing.Point(355, 395);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(116, 35);
             this.btnSave.TabIndex = 8;
@@ -380,6 +384,23 @@
             this.Naldo_stake.Name = "Naldo_stake";
             this.Naldo_stake.Width = 60;
             // 
+            // txtLicense
+            // 
+            this.txtLicense.Font = new System.Drawing.Font("Arial", 9.75F);
+            this.txtLicense.Location = new System.Drawing.Point(304, 243);
+            this.txtLicense.Name = "txtLicense";
+            this.txtLicense.Size = new System.Drawing.Size(389, 22);
+            this.txtLicense.TabIndex = 14;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(229, 242);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(70, 21);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "License";
+            // 
             // Mainform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -438,6 +459,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn outcome;
         private System.Windows.Forms.DataGridViewTextBoxColumn oddValue;
         private System.Windows.Forms.DataGridViewTextBoxColumn stake;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtLicense;
     }
 }
 
