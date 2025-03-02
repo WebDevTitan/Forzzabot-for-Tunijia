@@ -118,11 +118,12 @@ namespace Forzza
                             bool getid = _forzzaBetCdp.getIDs(betItem);
                             if (getid)
                             {
-                                WriteLog.WrittingLog("getting id is succeeded.");
-                                bool placebetresult = _forzzaBetCdp.placeBet();
+                                WriteLog.WrittingLog("getting id is succeed.");
+                                HistoryList history = _forzzaBetCdp.historyItem;
+                                bool placebetresult = _forzzaBetCdp.placeBet(history);
                                 if (placebetresult)
                                 {
-                                    WriteLog.WrittingLog("Placing bet is successed.");
+                                    WriteLog.WrittingLog("Placing bet is succeed.");
                                     _mainForm.displayHistory(_forzzaBetCdp.Historylist);
                                     _mainForm.changeLabel();
                                 } else

@@ -31,7 +31,7 @@ namespace Forzza
         private SocketConnector _socketConnector = null;
         private bool isRunning = false;
         private List<NaldotipList> Feedlist = new List<NaldotipList>();
-        private string connectionString = "server=localhost;port=3306;database=yourdb;user=root;password=;";
+        private string connectionString = "server=95.179.244.192;port=3306;database=betflash;user=willow;password=KYMis199$109;";
         MySqlConnection connection = null;
         public Mainform()
         {

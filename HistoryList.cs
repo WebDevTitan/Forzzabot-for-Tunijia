@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Forzza
 {
-    public   class HistoryList
+    public class HistoryList
     {
         public string number { get; set; }
         public string homeTeam { get; set; }
@@ -14,5 +14,6 @@ namespace Forzza
         public string outcome { get; set; }
         public string oddValue { get; set; }
         public string stake { get; set; }
+        public string marketid { get; set; }
     }
 }
